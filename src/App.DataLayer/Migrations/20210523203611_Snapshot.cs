@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace App.DataLayer.Migrations
 {
-    public partial class InitialModel : Migration
+    public partial class Snapshot : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,8 +27,7 @@ namespace App.DataLayer.Migrations
                 name: "PortfolioSnapshots",
                 columns: table => new
                 {
-                    Money = table.Column<double>(type: "float", nullable: false),
-                    Profit = table.Column<double>(type: "float", nullable: false)
+                    Version = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

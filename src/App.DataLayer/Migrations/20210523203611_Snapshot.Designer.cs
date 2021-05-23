@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App.DataLayer.Migrations
 {
     [DbContext(typeof(InvestmentHubContext))]
-    [Migration("20210523192945_InitialModel")]
-    partial class InitialModel
+    [Migration("20210523203611_Snapshot")]
+    partial class Snapshot
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -45,13 +45,10 @@ namespace App.DataLayer.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("App.DataLayer.Entities.Portfolio", b =>
+            modelBuilder.Entity("App.DataLayer.Entities.Snapshot", b =>
                 {
-                    b.Property<double>("Money")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Profit")
-                        .HasColumnType("float");
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
 
                     b.ToTable("PortfolioSnapshots");
                 });

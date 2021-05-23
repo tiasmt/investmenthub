@@ -12,7 +12,7 @@ namespace App.DataLayer
         }
 
         public DbSet<Event> Events {get;set;}
-        public DbSet<Portfolio> PortfolioSnapshots {get;set;}
+        public DbSet<Snapshot> PortfolioSnapshots {get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
