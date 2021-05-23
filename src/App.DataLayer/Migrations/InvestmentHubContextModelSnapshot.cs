@@ -43,13 +43,10 @@ namespace App.DataLayer.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("App.DataLayer.Entities.Portfolio", b =>
+            modelBuilder.Entity("App.DataLayer.Entities.Snapshot", b =>
                 {
-                    b.Property<double>("Money")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Profit")
-                        .HasColumnType("float");
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
 
                     b.ToTable("PortfolioSnapshots");
                 });
