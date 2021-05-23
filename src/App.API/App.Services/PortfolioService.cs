@@ -43,11 +43,11 @@ namespace App.API.App.Services
         {
             _portfolioState.Money += (evnt.Amount * evnt.Price);
             var share = new ShareTicker { Amount = evnt.Amount, Price = evnt.Price };
-            if (_portfolioState.Shares == null) _portfolioState.Shares = new Dictionary<string, ShareTicker>();
-            if (_portfolioState.Shares.ContainsKey(evnt.Stock))
+            if (_portfolioState.Shares == null) _portfolioState.Shares = new List<ShareTicker>();
+            if (_portfolioState.Shares.Exists(s => s.Name == evnt.Stock))
             {
-                _portfolioState.Shares[evnt.Stock].Amount -= evnt.Amount;
-                _portfolioState.Profit = (evnt.Price - _portfolioState.Shares[evnt.Stock].Price) * evnt.Amount;
+                _portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Amount -= evnt.Amount;
+                _portfolioState.Profit = (evnt.Price - _portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Price) * evnt.Amount;
             }
             else
             {
@@ -57,16 +57,16 @@ namespace App.API.App.Services
         private void Apply(SharesBought evnt)
         {
             _portfolioState.Money -= (evnt.Amount * evnt.Price);
-            var share = new ShareTicker { Amount = evnt.Amount, Price = evnt.Price };
-            if (_portfolioState.Shares == null) _portfolioState.Shares = new Dictionary<string, ShareTicker>();
-            if (_portfolioState.Shares.ContainsKey(evnt.Stock))
+            if (_portfolioState.Shares == null) _portfolioState.Shares = new List<ShareTicker>();
+            if (_portfolioState.Shares.Exists(s => s.Name == evnt.Stock))
             {
-                _portfolioState.Shares[evnt.Stock].Price = ((_portfolioState.Shares[evnt.Stock].Amount * _portfolioState.Shares[evnt.Stock].Price) + (evnt.Amount * evnt.Price)) / (_portfolioState.Shares[evnt.Stock].Amount + evnt.Amount);
-                _portfolioState.Shares[evnt.Stock].Amount += evnt.Amount;
+                _portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Price = ((_portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Amount * _portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Price) + (evnt.Amount * evnt.Price)) / (_portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Amount + evnt.Amount);
+                _portfolioState.Shares.Where(s => s.Name == evnt.Stock).First().Amount += evnt.Amount;
             }
             else
             {
-                _portfolioState.Shares.Add(evnt.Stock, share);
+                var share = new ShareTicker {Name = evnt.Stock, Price = evnt.Price, Amount = evnt.Amount};
+                _portfolioState.Shares.Add(share);
             }
 
         }

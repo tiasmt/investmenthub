@@ -8,5 +8,6 @@ namespace App.DataLayer.Entities
         public DateTime Timestamp {get;set;}
         public string EventType {get;set;}
         public string User {get;set;}
+        public string Data {get;set;}
     }
 }
