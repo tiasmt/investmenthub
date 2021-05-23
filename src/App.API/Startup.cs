@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.API.Services;
 using App.DataLayer;
+using App.DataLayer.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -34,6 +36,8 @@ namespace investmenthub
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "investmenthub", Version = "v1" });
             });
+            services.AddScoped<IPortfolioService, PortfolioService>();
+            services.AddScoped<IRepository, SQLRepository>();
             // services.AddDbContext<InvestmentHubContext>(
             //         options =>
             //             options.UseSqlServer(
@@ -41,7 +45,7 @@ namespace investmenthub
             //                 x => x.MigrationsAssembly("App.DataLayer")));
             services.AddDbContext<InvestmentHubContext>(
                     options =>
-                        options.UseInMemoryDatabase("InMemory"));
+                        options.UseInMemoryDatabase("InMemory"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
