@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using App.DataLayer.Events;
 
 namespace App.API.Services
 {
     public interface IPortfolioService
     {
-         void Deposit(string username, int amount);
-         void Withdrawal(string username, int amount);
-         void BuyStock(string username, string stock, int quantity, double price);
-         void SellStock(string username, string stock, int quantity, double price);
+         Task Deposit(string username, int amount);
+         Task Withdrawal(string username, int amount);
+         Task BuyStock(string username, string stock, int quantity, double price);
+         Task SellStock(string username, string stock, int quantity, double price);
          IList<IEvent> GetEvents();
          IList<IEvent> GetUncommittedEvents();
-         void ApplyEvent(IEvent evnt, bool isFastForward = false);
+         Task ApplyEvent(IEvent evnt, bool isFastForward = false);
     }
 }

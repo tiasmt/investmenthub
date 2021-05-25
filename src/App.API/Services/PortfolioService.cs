@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using App.DataLayer.Entities;
 using App.DataLayer.Events;
 using App.DataLayer.Repository;
@@ -14,33 +15,31 @@ namespace App.API.Services
         private readonly List<IEvent> _uncommittedevents = new List<IEvent>();
         public int Version { get; protected set; }
         //Projection (Current State)
-        private readonly Portfolio _portfolioState;
+        private Portfolio _portfolioState;
         private readonly IRepository _repository;
 
         public PortfolioService(IRepository repository)
         {
             _repository = repository;
-            //TODO get latest Snapshot and update events
-            _portfolioState = new Portfolio();
         }
 
-        public void Deposit(string username, int quantity)
+        public async Task Deposit(string username, int quantity)
         {
-            ApplyEvent(new DepositMade(username, quantity, DateTime.UtcNow));
+            await ApplyEvent(new DepositMade(username, quantity, DateTime.UtcNow));
         }
 
-        public void Withdrawal(string username, int quantity)
+        public async Task Withdrawal(string username, int quantity)
         {
-            ApplyEvent(new WithdrawalMade(username, quantity, DateTime.UtcNow));
+            await ApplyEvent(new WithdrawalMade(username, quantity, DateTime.UtcNow));
         }
 
-        public void BuyStock(string username, string stock, int quantity, double price)
+        public async Task BuyStock(string username, string stock, int quantity, double price)
         {
-            ApplyEvent(new SharesBought(username, stock, quantity, price, DateTime.UtcNow));
+            await ApplyEvent(new SharesBought(username, stock, quantity, price, DateTime.UtcNow));
         }
-        public void SellStock(string username, string stock, int quantity, double price)
+        public async Task SellStock(string username, string stock, int quantity, double price)
         {
-            ApplyEvent(new SharesSold(username, stock, quantity, price, DateTime.UtcNow));
+            await ApplyEvent(new SharesSold(username, stock, quantity, price, DateTime.UtcNow));
         }
 
         private void Apply(SharesSold evnt)
@@ -95,8 +94,11 @@ namespace App.API.Services
             return uncommittedEvents;
         }
 
-        public void ApplyEvent(IEvent evnt, bool isFastForward = false)
+        public async Task ApplyEvent(IEvent evnt, bool isFastForward = false)
         {
+            if(_portfolioState == null)
+                await GetPortfolio(evnt.User);
+            
             switch (evnt)
             {
                 case SharesBought sharesBought:
@@ -119,7 +121,18 @@ namespace App.API.Services
             else
                 _events.Add(evnt);
 
-            _repository.Save(_uncommittedevents);
+            await _repository.Save(_uncommittedevents, _portfolioState);
+        }
+
+        private async Task GetPortfolio(string username)
+        {
+            var snapshot = await _repository.GetSnapshot(username);
+            _portfolioState = snapshot.State;
+            var events = await _repository.GetEvents(username, snapshot.Version);
+            foreach(var evnt in events)
+            {
+                await ApplyEvent(evnt, true);
+            }
         }
     }
 
