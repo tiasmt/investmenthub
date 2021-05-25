@@ -43,12 +43,28 @@ namespace App.DataLayer.Migrations
                     b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("App.DataLayer.Entities.Snapshot", b =>
+            modelBuilder.Entity("App.DataLayer.Entities.SnapshotEvent", b =>
                 {
-                    b.Property<long>("Version")
-                        .HasColumnType("bigint");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.ToTable("PortfolioSnapshots");
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("User")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Snapshots");
                 });
 #pragma warning restore 612, 618
         }

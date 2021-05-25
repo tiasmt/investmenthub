@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace App.DataLayer.Migrations
 {
-    public partial class Snapshot : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,13 +24,19 @@ namespace App.DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PortfolioSnapshots",
+                name: "Snapshots",
                 columns: table => new
                 {
-                    Version = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EventType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    User = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_Snapshots", x => x.Id);
                 });
         }
 
@@ -40,7 +46,7 @@ namespace App.DataLayer.Migrations
                 name: "Events");
 
             migrationBuilder.DropTable(
-                name: "PortfolioSnapshots");
+                name: "Snapshots");
         }
     }
 }

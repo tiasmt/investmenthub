@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace App.DataLayer.Entities
 {
-    [Keyless]
+
     public class Snapshot
     {
         
