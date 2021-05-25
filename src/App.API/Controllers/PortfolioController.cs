@@ -23,9 +23,10 @@ namespace App.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromBody] string username)
         {
-            return Ok();
+            var portfolio = await _portfolioService.GetState(username);
+            return Ok(portfolio);
         }
 
         [HttpPost]
@@ -39,7 +40,7 @@ namespace App.API.Controllers
         [Route("withdraw")]
         public async Task<IActionResult> Withdrawal([FromBody] WithdrawalReq withdrawal)
         {
-            await _portfolioService.Deposit(withdrawal.User, withdrawal.Amount);
+            await _portfolioService.Withdrawal(withdrawal.User, withdrawal.Amount);
             return Ok();
         }
         [HttpPost]

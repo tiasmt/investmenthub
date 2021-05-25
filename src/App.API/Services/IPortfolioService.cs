@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using App.DataLayer.Entities;
 using App.DataLayer.Events;
 
 namespace App.API.Services
@@ -13,5 +14,6 @@ namespace App.API.Services
          IList<IEvent> GetEvents();
          IList<IEvent> GetUncommittedEvents();
          Task ApplyEvent(IEvent evnt, bool isFastForward = false);
+         Task<Portfolio> GetState(string username);
     }
 }

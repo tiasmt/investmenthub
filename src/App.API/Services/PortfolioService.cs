@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.API.Models;
 using App.DataLayer.Entities;
 using App.DataLayer.Events;
 using App.DataLayer.Repository;
@@ -122,6 +123,12 @@ namespace App.API.Services
                 _events.Add(evnt);
 
             await _repository.Save(_uncommittedevents, _portfolioState);
+        }
+
+        public async Task<Portfolio> GetState(string username)
+        {
+            await GetPortfolio(username);
+            return _portfolioState;
         }
 
         private async Task GetPortfolio(string username)
