@@ -32,28 +32,28 @@ namespace App.API.Controllers
         [Route("deposit")]
         public async Task<IActionResult> Deposit([FromBody] DepositReq deposit)
         {
-            _portfolioService.Deposit(deposit.User, deposit.Amount);
+            await _portfolioService.Deposit(deposit.User, deposit.Amount);
             return Ok();
         }
         [HttpPost]
         [Route("withdraw")]
         public async Task<IActionResult> Withdrawal([FromBody] WithdrawalReq withdrawal)
         {
-            _portfolioService.Deposit(withdrawal.User, withdrawal.Amount);
+            await _portfolioService.Deposit(withdrawal.User, withdrawal.Amount);
             return Ok();
         }
         [HttpPost]
         [Route("buy")]
         public async Task<IActionResult> BuyStock([FromBody] BuyStockReq buyRequest)
         {
-            _portfolioService.BuyStock(buyRequest.User, buyRequest.Stock, buyRequest.Amount, buyRequest.Price);
+            await _portfolioService.BuyStock(buyRequest.User, buyRequest.Stock, buyRequest.Amount, buyRequest.Price);
             return Ok();
         }
         [HttpPost]
         [Route("sell")]
         public async Task<IActionResult> SellStock([FromBody] SellStockReq sellRequest)
         {
-            _portfolioService.SellStock(sellRequest.User, sellRequest.Stock, sellRequest.Amount, sellRequest.Price);
+            await _portfolioService.SellStock(sellRequest.User, sellRequest.Stock, sellRequest.Amount, sellRequest.Price);
             return Ok();
         }
     }
