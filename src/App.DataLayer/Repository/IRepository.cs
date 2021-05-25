@@ -6,8 +6,8 @@ namespace App.DataLayer.Repository
 {
     public interface IRepository
     {
-        Task Save(List<IEvent> newEvents);
-        Task<List<IEvent>> GetAllEvents(string username);
+        Task Save(List<IEvent> newEvents, Portfolio portfolioState = null);
+        Task<List<IEvent>> GetEvents(string username, long start = 0);
         Task<Snapshot> GetSnapshot(string username);
     }
 }
