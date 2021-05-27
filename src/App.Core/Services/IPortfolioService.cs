@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using App.DataLayer.Entities;
 using App.DataLayer.Events;
 
-namespace App.API.Services
+namespace App.Core.Services
 {
     public interface IPortfolioService
     {

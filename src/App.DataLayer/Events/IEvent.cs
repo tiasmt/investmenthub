@@ -4,5 +4,6 @@ namespace App.DataLayer.Events
     {
         string User {get;}
         string EventType { get; }
+        
     }
 }

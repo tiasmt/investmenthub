@@ -13,7 +13,7 @@ namespace App.DataLayer.Repository
     public class SQLRepository : IRepository
     {
         private readonly InvestmentHubContext _context;
-        private readonly int _snapshotInterval = 2;
+        private readonly int _snapshotInterval = 5;
         public SQLRepository(InvestmentHubContext context)
         {
             _context = context;

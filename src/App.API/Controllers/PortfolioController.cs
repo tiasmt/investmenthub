@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.API.Models;
-using App.API.Services;
+using App.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +28,6 @@ namespace App.API.Controllers
             var portfolio = await _portfolioService.GetState(username);
             return Ok(portfolio);
         }
-
         [HttpPost]
         [Route("deposit")]
         public async Task<IActionResult> Deposit([FromBody] DepositReq deposit)

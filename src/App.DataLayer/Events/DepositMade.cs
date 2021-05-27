@@ -15,5 +15,6 @@ namespace App.DataLayer.Events
             Amount = amount;
             DateTime = dateTime;
         }
+        
     }
 }

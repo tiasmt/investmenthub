@@ -2,26 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using App.API.Models;
+using App.Core.Hubs;
 using App.DataLayer.Entities;
 using App.DataLayer.Events;
 using App.DataLayer.Repository;
+using Microsoft.AspNetCore.SignalR;
 
-namespace App.API.Services
+namespace App.Core.Services
 {
     public class PortfolioService : IPortfolioService
     {
-        
+
         private readonly List<IEvent> _events = new List<IEvent>();
         private readonly List<IEvent> _uncommittedevents = new List<IEvent>();
         public int Version { get; protected set; }
         //Projection (Current State)
         private Portfolio _portfolioState;
         private readonly IRepository _repository;
+        private readonly IHubContext<PortfolioHub, IPortfolio> _portfolioHub;
 
-        public PortfolioService(IRepository repository)
+        public PortfolioService(IRepository repository, IHubContext<PortfolioHub, IPortfolio> portfolioHub)
         {
             _repository = repository;
+            _portfolioHub = portfolioHub;
         }
 
         public async Task Deposit(string username, int quantity)
@@ -97,9 +100,9 @@ namespace App.API.Services
 
         public async Task ApplyEvent(IEvent evnt, bool isFastForward = false)
         {
-            if(_portfolioState == null)
+            if (_portfolioState == null)
                 await GetPortfolio(evnt.User);
-            
+
             switch (evnt)
             {
                 case SharesBought sharesBought:
@@ -118,11 +121,18 @@ namespace App.API.Services
 
 
             if (isFastForward == false)
+            {
                 _uncommittedevents.Add(evnt);
+                await _portfolioHub.Clients.All.UpdatePortfolio(_portfolioState);
+            }
             else
+            {
                 _events.Add(evnt);
+            }
 
             await _repository.Save(_uncommittedevents, _portfolioState);
+
+
         }
 
         public async Task<Portfolio> GetState(string username)
@@ -136,7 +146,7 @@ namespace App.API.Services
             var snapshot = await _repository.GetSnapshot(username);
             _portfolioState = snapshot.State;
             var events = await _repository.GetEvents(username, snapshot.Version);
-            foreach(var evnt in events)
+            foreach (var evnt in events)
             {
                 await ApplyEvent(evnt, true);
             }
