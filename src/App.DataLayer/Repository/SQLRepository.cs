@@ -33,7 +33,9 @@ namespace App.DataLayer.Repository
 
         public async Task<Snapshot> GetSnapshot(string username)
         {
-            var snapshotEvent = await _context.Snapshots.LastOrDefaultAsync();
+            var snapshotEvent = await _context.Snapshots.Where(e => e.User == username)
+                                                        .OrderByDescending(s => s.Id)
+                                                        .FirstOrDefaultAsync();
             var snapshot = snapshotEvent == null ? new Snapshot() : JsonConvert.DeserializeObject<Snapshot>(snapshotEvent.Data);
             return snapshot;
         }
@@ -48,21 +50,21 @@ namespace App.DataLayer.Repository
                 var evt = new Event { Timestamp = DateTime.UtcNow, EventType = evnt.EventType, User = evnt.User, Data = jsonData };
                 await _context.Events.AddAsync(evt);
                 await _context.SaveChangesAsync();
-                version = evt.Id;
+                version = await _context.Events.Where(e => e.User == evnt.User).CountAsync();
 
                 if ((version) % _snapshotInterval == 0 && portfolioState != null)
                 {
-                    await AppendSnapshot(portfolioState, (int)version);
+                    await AppendSnapshot(portfolioState, (int)version, evnt.User);
                 }
             }
         }
 
-        private async Task AppendSnapshot(Portfolio portfolio, int version)
+        private async Task AppendSnapshot(Portfolio portfolio, int version, string user)
         {
             try
             {
                 var jsonData = JsonConvert.SerializeObject(new Snapshot { State = portfolio, Version = version });
-                await _context.Snapshots.AddAsync(new SnapshotEvent { Id = version, EventType = nameof(Snapshot), Timestamp = DateTime.UtcNow, Data = jsonData });
+                await _context.Snapshots.AddAsync(new SnapshotEvent { Version = version, User = user, EventType = nameof(Snapshot),Timestamp = DateTime.UtcNow, Data = jsonData });
                 await _context.SaveChangesAsync();
             }
             catch(Exception ex)

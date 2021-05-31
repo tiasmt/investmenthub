@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App.DataLayer.Migrations
 {
     [DbContext(typeof(InvestmentHubContext))]
-    [Migration("20210524190135_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210531190434_InitialModel")]
+    partial class InitialModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,6 +63,9 @@ namespace App.DataLayer.Migrations
 
                     b.Property<string>("User")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
