@@ -32,14 +32,14 @@ namespace investmenthub
             });
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRepository, SQLRepository>();
-            // services.AddDbContext<InvestmentHubContext>(
-            //         options =>
-            //             options.UseSqlServer(
-            //                 Configuration.GetConnectionString("DefaultConnection"),
-            //                 x => x.MigrationsAssembly("App.DataLayer")));
             services.AddDbContext<InvestmentHubContext>(
                     options =>
-                        options.UseInMemoryDatabase("InMemory"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
+                        options.UseSqlServer(
+                            Configuration.GetConnectionString("MyLocalDB"),
+                            x => x.MigrationsAssembly("App.DataLayer")));
+            // services.AddDbContext<InvestmentHubContext>(
+            //         options =>
+            //             options.UseInMemoryDatabase("InMemory"), ServiceLifetime.Singleton, ServiceLifetime.Singleton);
             services.AddSignalR();
         }
 
