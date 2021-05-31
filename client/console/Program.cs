@@ -37,14 +37,11 @@ namespace console
                 _connection.On<Portfolio>("UpdatePortfolio", (porfolio) => UpdatePortfolio(porfolio));
 
                 _connection.StartAsync().Wait();
-
-
-
-
             }
 
             private void UpdatePortfolio(Portfolio portfolio)
             {
+                System.Console.Clear();
                 System.Console.WriteLine($"Money: {portfolio.Money:0.##}");
                 if (portfolio.Shares != null)
                 {
