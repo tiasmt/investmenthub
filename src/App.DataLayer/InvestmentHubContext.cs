@@ -6,6 +6,10 @@ namespace App.DataLayer
     public class InvestmentHubContext : DbContext
     {
 
+        public InvestmentHubContext()
+        {
+            
+        }
         public InvestmentHubContext(DbContextOptions<InvestmentHubContext> options) : base(options)
         {
             
@@ -14,12 +18,5 @@ namespace App.DataLayer
         public DbSet<Event> Events {get;set;}
         public DbSet<SnapshotEvent> Snapshots {get;set;}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-        }
     }
 }

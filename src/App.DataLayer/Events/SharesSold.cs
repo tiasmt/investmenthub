@@ -4,7 +4,7 @@ namespace App.DataLayer.Events
 {
     public class SharesSold : IEvent
     {
-        public string EventType { get; } = nameof(SharesBought);
+        public string EventType { get; } = nameof(SharesSold);
         public string Stock { get; }
         public string User { get; }
         public int Amount { get; }
