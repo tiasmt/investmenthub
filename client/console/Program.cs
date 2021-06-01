@@ -36,7 +36,7 @@ namespace console
                 // receive a message from the hub
                 _connection.On<Portfolio>("UpdatePortfolio", (porfolio) => UpdatePortfolio(porfolio));
 
-                _connection.StartAsync().Wait();
+                await _connection.StartAsync();
             }
 
             private void UpdatePortfolio(Portfolio portfolio)
