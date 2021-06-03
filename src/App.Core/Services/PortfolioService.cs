@@ -7,7 +7,6 @@ using App.DataLayer.Entities;
 using App.DataLayer.Events;
 using App.DataLayer.Repository;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace App.Core.Services
 {
@@ -21,13 +20,13 @@ namespace App.Core.Services
         private Portfolio _portfolioState;
         private readonly IRepository _repository;
         private readonly IHubContext<PortfolioHub, IPortfolio> _portfolioHub;
-        private readonly IDistributedCache _distributedCache;
 
-        public PortfolioService(IRepository repository, IHubContext<PortfolioHub, IPortfolio> portfolioHub, IDistributedCache distributedCache)
+
+        public PortfolioService(IRepository repository, IHubContext<PortfolioHub, IPortfolio> portfolioHub)
         {
             _repository = repository;
             _portfolioHub = portfolioHub;
-            _distributedCache = distributedCache;
+            
         }
 
         public async Task Deposit(string username, int quantity)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using App.DataLayer.Entities;
 using App.DataLayer.Events;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace App.DataLayer.Repository
@@ -14,15 +15,35 @@ namespace App.DataLayer.Repository
     {
         private readonly InvestmentHubContext _context;
         private readonly int _snapshotInterval = 5;
-        public SQLRepository(InvestmentHubContext context)
+        private readonly IDistributedCache _distributedCache;
+        public SQLRepository(InvestmentHubContext context, IDistributedCache distributedCache)
         {
             _context = context;
+            _distributedCache = distributedCache;
         }
 
         public async Task<IList<IEvent>> GetEvents(string username, long start = 0)
         {
+            var cacheKey = "events" + username;
+            var serializedEvents = string.Empty;
             var events = new List<IEvent>();
-            var eventData = await _context.Events.Where(x => x.User == username).Skip((int)start).ToListAsync();
+            var eventData = new List<Event>();
+            var redisEvents = await _distributedCache.GetAsync(cacheKey);
+            if (redisEvents != null)
+            {
+                serializedEvents = Encoding.UTF8.GetString(redisEvents);
+                eventData = JsonConvert.DeserializeObject<List<Event>>(serializedEvents);
+            }
+            else
+            {
+                eventData = await _context.Events.Where(x => x.User == username).Skip((int)start).ToListAsync();
+                serializedEvents = JsonConvert.SerializeObject(eventData);
+                redisEvents = Encoding.UTF8.GetBytes(serializedEvents);
+                var options = new DistributedCacheEntryOptions()
+                    .SetAbsoluteExpiration(DateTime.Now.AddMinutes(10))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(2));
+                await _distributedCache.SetAsync(cacheKey, redisEvents, options);
+            }
             foreach (var evnt in eventData)
             {
                 IEvent resolvedEvent = DeserializeEvent(evnt);
@@ -57,6 +78,12 @@ namespace App.DataLayer.Repository
                     await AppendSnapshot(portfolioState, (int)version, evnt.User);
                 }
             }
+
+            /*if (newEvents.Count != 0)
+            {
+                var user = newEvents.FirstOrDefault().User;
+                await _distributedCache.RemoveAsync("events" + user);
+            }*/
         }
 
         private async Task AppendSnapshot(Portfolio portfolio, int version, string user)
@@ -64,10 +91,10 @@ namespace App.DataLayer.Repository
             try
             {
                 var jsonData = JsonConvert.SerializeObject(new Snapshot { State = portfolio, Version = version });
-                await _context.Snapshots.AddAsync(new SnapshotEvent { Version = version, User = user, EventType = nameof(Snapshot),Timestamp = DateTime.UtcNow, Data = jsonData });
+                await _context.Snapshots.AddAsync(new SnapshotEvent { Version = version, User = user, EventType = nameof(Snapshot), Timestamp = DateTime.UtcNow, Data = jsonData });
                 await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
