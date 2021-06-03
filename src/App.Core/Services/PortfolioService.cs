@@ -13,8 +13,8 @@ namespace App.Core.Services
     public class PortfolioService : IPortfolioService
     {
 
-        private readonly List<IEvent> _events = new List<IEvent>();
-        private readonly List<IEvent> _uncommittedevents = new List<IEvent>();
+        private readonly IList<IEvent> _events = new List<IEvent>();
+        private readonly IList<IEvent> _uncommittedevents = new List<IEvent>();
         public int Version { get; protected set; }
         //Projection (Current State)
         private Portfolio _portfolioState;
@@ -130,8 +130,8 @@ namespace App.Core.Services
                 _events.Add(evnt);
             }
 
-            await _repository.Save(_uncommittedevents, _portfolioState);
-
+            var uncommittedEvents = GetUncommittedEvents();
+            await _repository.Save(uncommittedEvents, _portfolioState);
 
         }
 

@@ -19,7 +19,7 @@ namespace App.DataLayer.Repository
             _context = context;
         }
 
-        public async Task<List<IEvent>> GetEvents(string username, long start = 0)
+        public async Task<IList<IEvent>> GetEvents(string username, long start = 0)
         {
             var events = new List<IEvent>();
             var eventData = await _context.Events.Where(x => x.User == username).Skip((int)start).ToListAsync();
@@ -40,7 +40,7 @@ namespace App.DataLayer.Repository
             return snapshot;
         }
 
-        public async Task Save(List<IEvent> newEvents, Portfolio portfolioState = null)
+        public async Task Save(IList<IEvent> newEvents, Portfolio portfolioState = null)
         {
             long version = 0;
 
