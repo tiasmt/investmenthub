@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace tests
 {
-
     public class PortfolioTests : IDisposable
     {
         private readonly InvestmentHubContext _dbContext;
@@ -175,6 +174,30 @@ namespace tests
             Assert.Equal(2, result.Shares[0].Amount);
             Assert.Equal("MSFT", result.Shares[0].Name);
             Assert.Equal(1.5, result.Shares[0].Price);
+        }
+
+        [Fact]
+        public async Task SingleDepositBuySingleStockSellWithProfit_SingleUser()
+        {
+
+            var mockHub = new Mock<IHubContext<PortfolioHub, IPortfolio>>();
+            var all = new Mock<IPortfolio>();
+            all.Setup(_ => _.UpdatePortfolio(new Portfolio())).Verifiable();
+            mockHub.Setup(_ => _.Clients.All).Returns(all.Object);
+
+
+            var portfolioService = new PortfolioService(_repository, mockHub.Object);
+            var initialState = await portfolioService.GetState("User");
+            Assert.Equal(0, initialState.Money);
+
+            await portfolioService.Deposit("User", 10);
+            await portfolioService.BuyStock("User", "MSFT", 1, 1);
+            await portfolioService.SellStock("User", "MSFT", 1, 2);
+
+            var result = await portfolioService.GetState("User");
+            Assert.Equal(11, result.Money);
+            Assert.Equal(1, result.Profit);
+            Assert.Equal(0, result.Shares[0].Amount);
         }
     }
 }
