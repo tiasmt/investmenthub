@@ -32,6 +32,10 @@ namespace investmenthub
             });
             services.AddScoped<IPortfolioService, PortfolioService>();
             services.AddScoped<IRepository, SQLRepository>();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+            });
             services.AddDbContext<InvestmentHubContext>(
                     options =>
                         options.UseSqlServer(
